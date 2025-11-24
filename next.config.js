@@ -8,6 +8,8 @@ const nextConfig = {
         COSMOS_DATABASE: process.env.COSMOS_DATABASE,
         COSMOS_CONTAINER: process.env.COSMOS_CONTAINER,
     },
+    // Enable standalone output so the build creates .next/standalone with static assets
+    output: 'standalone',
     // Optional: silence middleware deprecation warning (if you have middleware files)
     // You can migrate them to "proxy" later.
 };
