@@ -1,4 +1,4 @@
-name: Build and deploy Node.js app to Azure Web App - flood-relief-app
+name: Build and deploy Node.js app to Azure Web App - flood-relief-apps
 
 on:
   push:
