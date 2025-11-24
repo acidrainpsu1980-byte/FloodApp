@@ -20,7 +20,7 @@ export function convertToCSV(data: RequestData[]): string {
 
     // CSV Rows
     const rows = data.map(item => {
-        const date = new Date(item.createdAt);
+        const date = new Date(item.timestamp);
         return [
             item.id,
             date.toLocaleDateString('th-TH'),
