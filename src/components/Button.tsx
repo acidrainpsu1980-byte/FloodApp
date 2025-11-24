@@ -17,10 +17,10 @@ export default function Button({
     const baseStyles = "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
     const variants = {
-        primary: "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] focus:ring-[var(--primary)]",
-        secondary: "bg-[var(--secondary)] text-white hover:bg-[var(--secondary-hover)] focus:ring-[var(--secondary)]",
-        outline: "border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white focus:ring-[var(--primary)]",
-        ghost: "text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-main)]",
+        primary: "btn-primary focus:ring-[var(--primary)]",
+        secondary: "btn-secondary focus:ring-[var(--secondary)]",
+        outline: "btn-outline focus:ring-[var(--primary)]",
+        ghost: "btn-ghost",
     };
 
     const sizes = {
