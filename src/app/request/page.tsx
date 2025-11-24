@@ -18,6 +18,7 @@ export default function RequestPage() {
         needs: [] as string[],
         lat: undefined as number | undefined,
         lng: undefined as number | undefined,
+        note: "",
     });
 
     const MapPicker = useMemo(() => dynamic(
@@ -83,6 +84,7 @@ export default function RequestPage() {
                     },
                     peopleCount: Number(formData.peopleCount),
                     needs: formData.needs,
+                    note: formData.note,
                 }),
             });
 
@@ -156,6 +158,13 @@ export default function RequestPage() {
                             value={formData.peopleCount}
                             onChange={e => setFormData({ ...formData, peopleCount: Number(e.target.value) })}
                             required
+                        />
+                        {/* Note textbox */}
+                        <Input
+                            label="หมายเหตุ (ถ้ามี)"
+                            placeholder="เพิ่มรายละเอียดเพิ่มเติม..."
+                            value={formData.note}
+                            onChange={e => setFormData({ ...formData, note: e.target.value })}
                         />
 
                         <div className="flex flex-col gap-2">
