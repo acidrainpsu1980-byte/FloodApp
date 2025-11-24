@@ -16,6 +16,7 @@ export interface RequestData {
     assignedUnit: 'Medical' | 'Water Rescue' | 'Supply' | 'General';
     priority: 'High' | 'Normal';
     timestamp: string;
+    note?: string; // optional note field added by user
 }
 
 const DATA_FILE = path.join(process.cwd(), 'data.json');
@@ -30,6 +31,48 @@ export function getRequests(): RequestData[] {
     } catch (error) {
         return [];
     }
+}
+
+export function convertToCSV(data: RequestData[]): string {
+    const headers = [
+        "ID",
+        "ชื่อผู้แจ้ง",
+        "เบอร์โทรศัพท์",
+        "ที่อยู่",
+        "ละติจูด",
+        "ลองจิจูด",
+        "จำนวนคน",
+        "ความต้องการ",
+        "สถานะ",
+        "หน่วยงานที่รับผิดชอบ",
+        "ความสำคัญ",
+        "เวลาที่แจ้ง",
+        "หมายเหตุ"
+    ];
+
+    const csvRows = data.map(item => {
+        const lat = item.location.lat !== undefined ? item.location.lat.toString() : '';
+        const lng = item.location.lng !== undefined ? item.location.lng.toString() : '';
+        return [
+            `"${item.id}"`,
+            `"${item.name.replace(/"/g, '""')}"`,
+            `"${item.phone}"`,
+            `"${item.location.address.replace(/"/g, '""')}"`,
+            `"${lat}"`,
+            `"${lng}"`,
+            item.peopleCount.toString(),
+            `"${item.needs.join(", ")}"`,
+            item.status === 'pending' ? 'รอช่วยเหลือ' : item.status === 'in-progress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น',
+            item.assignedUnit === 'Medical' ? 'ทีมแพทย์' :
+                item.assignedUnit === 'Water Rescue' ? 'กู้ชีพทางน้ำ' :
+                    item.assignedUnit === 'Supply' ? 'ทีมเสบียง' : 'ทีมทั่วไป',
+            item.priority === 'High' ? 'สูง' : 'ปกติ',
+            `"${item.timestamp}"`,
+            item.note ? `"${item.note.replace(/"/g, '""')}"` : ""
+        ].join(",");
+    });
+
+    return [headers.join(","), ...csvRows].join("\n");
 }
 
 export function saveRequest(request: Omit<RequestData, 'id' | 'timestamp' | 'status'>): RequestData {

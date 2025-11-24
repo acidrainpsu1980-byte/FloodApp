@@ -221,6 +221,14 @@ export default function DashboardPage() {
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* Note display */}
+                                    {request.note && (
+                                        <p className="text-sm text-[var(--text-secondary)] mt-2">
+                                            📋 หมายเหตุ: {request.note}
+                                        </p>
+                                    )}
+
                                     <div className="flex gap-2 mt-auto pt-4 border-t border-[var(--border)]">
                                         {request.status === 'pending' && (
                                             <Button
