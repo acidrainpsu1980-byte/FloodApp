@@ -101,6 +101,14 @@ export default function MapViewer({ requests, selectedRequestId }: MapViewerProp
                                         📝 {request.note}
                                     </p>
                                 )}
+                                <a
+                                    href={`https://www.google.com/maps/dir/?api=1&destination=${request.location.lat},${request.location.lng}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block mt-2 text-center bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors"
+                                >
+                                    🚗 นำทาง (Google Maps)
+                                </a>
                             </div>
                         </Popup>
                     </Marker>
