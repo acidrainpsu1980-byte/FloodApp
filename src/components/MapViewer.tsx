@@ -34,7 +34,7 @@ export default function MapViewer({ requests }: MapViewerProps) {
     const validRequests = requests.filter(r => r.location.lat && r.location.lng);
 
     return (
-        <div className="h-[600px] w-full rounded-lg overflow-hidden border border-[var(--border)] shadow-md z-0 relative">
+        <div style={{ height: '650px', width: '100%', position: 'relative', zIndex: 0 }} className="rounded-lg overflow-hidden border border-[var(--border)] shadow-md bg-slate-100">
             <MapContainer
                 center={defaultCenter}
                 zoom={13}
