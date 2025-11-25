@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { RequestData } from "@/lib/storage";
 import { useEffect } from "react";
@@ -75,6 +75,9 @@ export default function MapViewer({ requests, selectedRequestId }: MapViewerProp
                         position={[request.location.lat!, request.location.lng!]}
                         icon={getIcon(request.status, request.priority)}
                     >
+                        <Tooltip direction="bottom" offset={[0, 10]} opacity={0.9} permanent>
+                            <span className="font-semibold">{request.name}</span>
+                        </Tooltip>
                         <Popup>
                             <div className="p-1">
                                 <strong className="text-base block mb-1">{request.name}</strong>
