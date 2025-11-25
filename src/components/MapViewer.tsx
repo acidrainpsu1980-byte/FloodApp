@@ -34,7 +34,7 @@ export default function MapViewer({ requests }: MapViewerProps) {
     const validRequests = requests.filter(r => r.location.lat && r.location.lng);
 
     return (
-        <div className="h-[500px] w-full rounded-lg overflow-hidden border border-[var(--border)] shadow-md z-0 relative">
+        <div className="h-[600px] w-full rounded-lg overflow-hidden border border-[var(--border)] shadow-md z-0 relative">
             <MapContainer
                 center={defaultCenter}
                 zoom={13}
@@ -61,7 +61,7 @@ export default function MapViewer({ requests }: MapViewerProps) {
                                 </div>
                                 <div className="flex gap-2 items-center">
                                     <span className={`px-2 py-0.5 rounded text-xs font-bold text-white ${request.status === 'pending' ? 'bg-red-500' :
-                                            request.status === 'in-progress' ? 'bg-yellow-500' : 'bg-green-500'
+                                        request.status === 'in-progress' ? 'bg-yellow-500' : 'bg-green-500'
                                         }`}>
                                         {request.status === 'pending' ? 'รอช่วยเหลือ' :
                                             request.status === 'in-progress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น'}

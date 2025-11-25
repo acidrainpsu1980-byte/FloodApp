@@ -30,7 +30,7 @@ export default function DashboardPage() {
     const MapViewer = useMemo(() => dynamic(
         () => import('@/components/MapViewer'),
         {
-            loading: () => <div className="h-[500px] w-full bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">กำลังโหลดแผนที่...</div>,
+            loading: () => <div className="h-[600px] w-full bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">กำลังโหลดแผนที่...</div>,
             ssr: false
         }
     ), []);
@@ -190,7 +190,7 @@ export default function DashboardPage() {
                                         </div>
                                         <div className="flex justify-between items-center mt-1">
                                             <span className={`text-xs px-1.5 py-0.5 rounded ${req.status === 'pending' ? 'bg-red-100 text-red-600' :
-                                                    req.status === 'in-progress' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
+                                                req.status === 'in-progress' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
                                                 }`}>
                                                 {req.status === 'pending' ? 'รอ' : req.status === 'in-progress' ? 'กำลังทำ' : 'เสร็จ'}
                                             </span>
@@ -214,8 +214,8 @@ export default function DashboardPage() {
                                     key={f}
                                     onClick={() => setFilter(f)}
                                     className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${filter === f
-                                            ? 'bg-white text-blue-600 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-700'
+                                        ? 'bg-white text-blue-600 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-700'
                                         }`}
                                 >
                                     {f === 'all' ? 'ทั้งหมด' : f === 'pending' ? 'รอช่วยเหลือ' : 'เสร็จสิ้น'}
@@ -232,8 +232,8 @@ export default function DashboardPage() {
                                 <Card key={request.id} className="flex flex-col h-full border hover:shadow-md transition-shadow">
                                     <div className="flex justify-between items-start mb-3">
                                         <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${request.status === 'pending' ? 'bg-red-100 text-red-600' :
-                                                request.status === 'in-progress' ? 'bg-yellow-100 text-yellow-600' :
-                                                    'bg-green-100 text-green-600'
+                                            request.status === 'in-progress' ? 'bg-yellow-100 text-yellow-600' :
+                                                'bg-green-100 text-green-600'
                                             }`}>
                                             {request.status === 'pending' ? 'รอช่วยเหลือ' :
                                                 request.status === 'in-progress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น'}
