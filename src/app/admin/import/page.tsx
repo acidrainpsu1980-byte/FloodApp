@@ -164,7 +164,7 @@ export default function ImportPage() {
                 alert(`✅ AI วิเคราะห์สำเร็จ ${result.count} รายการ`);
             } else {
                 const error = await response.json();
-                alert(`❌ AI วิเคราะห์ไม่สำเร็จ: ${error.error}\nกรุณาลองใช้วิธีปกติ`);
+                alert(`❌ AI วิเคราะห์ไม่สำเร็จ: ${error.error}\nรายละเอียด: ${error.details || 'ไม่ระบุ'}\n\nกรุณาลองใช้วิธีปกติ หรือตรวจสอบ API Key`);
             }
         } catch (error) {
             console.error(error);

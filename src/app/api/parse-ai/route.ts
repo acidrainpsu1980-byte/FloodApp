@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
 export async function POST(request: NextRequest) {
     try {
         const { text } = await request.json();
@@ -14,6 +12,16 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            console.error("GEMINI_API_KEY is missing in environment variables");
+            return NextResponse.json(
+                { error: "Configuration Error", details: "GEMINI_API_KEY is missing on server" },
+                { status: 500 }
+            );
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `คุณเป็น AI ผู้ช่วยในการแยกข้อมูลผู้ประสบภัยน้ำท่วมจาก Facebook comments
@@ -48,7 +56,7 @@ ${text}`;
         const jsonMatch = aiText.match(/\[[\s\S]*\]/);
         if (!jsonMatch) {
             return NextResponse.json(
-                { error: "AI did not return valid JSON" },
+                { error: "AI did not return valid JSON", details: aiText.substring(0, 100) },
                 { status: 500 }
             );
         }
@@ -79,7 +87,7 @@ ${text}`;
     } catch (error: any) {
         console.error("AI parsing error:", error);
         return NextResponse.json(
-            { error: "AI parsing failed", details: error.message },
+            { error: "AI parsing failed", details: error.message || JSON.stringify(error) },
             { status: 500 }
         );
     }
