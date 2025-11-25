@@ -75,3 +75,9 @@ export async function deleteRequest(id: string): Promise<void> {
     await initCosmosDB();
     await container.item(id, id).delete();
 }
+
+// Get container instance (for bulk operations)
+export async function getContainer(): Promise<Container> {
+    await initCosmosDB();
+    return container;
+}

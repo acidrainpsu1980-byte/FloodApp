@@ -127,8 +127,11 @@ export default function DashboardPage() {
                         <p className="text-slate-500 text-sm mt-1">ศูนย์บัญชาการและติดตามสถานการณ์แบบเรียลไทม์</p>
                     </div>
                     <div className="flex gap-2 mt-4 md:mt-0">
+                        <Button variant="outline" size="sm" onClick={() => router.push('/admin/import')} className="border-purple-600 text-purple-600 hover:bg-purple-50">
+                            📥 Import จาก FB
+                        </Button>
                         <Button variant="outline" size="sm" onClick={handleExport} className="border-green-600 text-green-600 hover:bg-green-50">
-                            📥 Export CSV
+                            📄 Export CSV
                         </Button>
                         <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-600 hover:bg-red-50">
                             ออกจากระบบ

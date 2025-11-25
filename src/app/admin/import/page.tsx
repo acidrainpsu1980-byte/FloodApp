@@ -1,0 +1,321 @@
+"use client";
+
+import { useState } from "react";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { RequestData } from "@/lib/storage";
+
+interface ParsedRequest {
+    name: string;
+    phone: string;
+    location: { address: string; lat?: number; lng?: number };
+    peopleCount: number;
+    needs: string[];
+    note: string;
+    priority: "Normal" | "High";
+}
+
+// Parser function to extract data from Facebook comments
+const parseComments = (text: string): ParsedRequest[] => {
+    const results: ParsedRequest[] = [];
+
+    // Split by common Facebook comment separators
+    const comments = text.split(/\n\n+|\n-{3,}\n/);
+
+    for (const comment of comments) {
+        if (comment.trim().length < 10) continue; // Skip very short comments
+
+        const parsed: Partial<ParsedRequest> = {
+            needs: [],
+            priority: "Normal"
+        };
+
+        // Extract phone number (Thai format)
+        const phoneMatch = comment.match(/0[0-9]{1,2}[-\s]?[0-9]{3,4}[-\s]?[0-9]{4}/);
+        if (phoneMatch) {
+            parsed.phone = phoneMatch[0].replace(/[-\s]/g, '');
+        }
+
+        // Extract name (usually at the start or after "ชื่อ")
+        const nameMatch = comment.match(/(?:ชื่อ[:\s]+)?([ก-๙a-zA-Z\s]{3,30})/);
+        if (nameMatch) {
+            parsed.name = nameMatch[1].trim();
+        }
+
+        // Extract address (look for location keywords)
+        const addressMatch = comment.match(/(?:ที่อยู่|อยู่|บ้าน)[:\s]+([^\n]+)/i);
+        if (addressMatch) {
+            parsed.location = { address: addressMatch[1].trim() };
+        } else {
+            // Try to find address-like text (mention of soi, street, etc)
+            const addrMatch = comment.match(/(?:ซอย|ถนน|ตำบล|อำเภอ|จังหวัด)[^\n]+/);
+            if (addrMatch) {
+                parsed.location = { address: addrMatch[0].trim() };
+            }
+        }
+
+        // Extract number of people
+        const peopleMatch = comment.match(/([0-9]+)\s*(?:คน|ท่าน|ครอบครัว)/);
+        if (peopleMatch) {
+            parsed.peopleCount = parseInt(peopleMatch[1]);
+        }
+
+        // Extract needs
+        if (/น้ำ|น้ำดื่ม|น้ำสะอาด/i.test(comment)) parsed.needs?.push("น้ำดื่ม");
+        if (/อาหาร|ข้าว|กิน/i.test(comment)) parsed.needs?.push("อาหาร");
+        if (/ยา|แพทย์|หมอ|เจ็บป่วย/i.test(comment)) parsed.needs?.push("ยา/การแพทย์");
+        if (/เรือ|รับ|ไป|ย้าย|อพยพ/i.test(comment)) parsed.needs?.push("รับ-ส่ง");
+        if (/เสื้อผ้า|ผ้า/i.test(comment)) parsed.needs?.push("เสื้อผ้า");
+
+        // Check if urgent
+        if (/ด่วน|เร่งด่วน|ฉุกเฉิน|คริติคอล/i.test(comment)) {
+            parsed.priority = "High";
+        }
+
+        // Store note as the original comment
+        parsed.note = comment.trim().substring(0, 200);
+
+        // Validate minimum required fields
+        if (parsed.name && (parsed.phone || parsed.location)) {
+            results.push({
+                name: parsed.name || "ไม่ระบุชื่อ",
+                phone: parsed.phone || "",
+                location: parsed.location || { address: "ไม่ระบุที่อยู่" },
+                peopleCount: parsed.peopleCount || 1,
+                needs: parsed.needs && parsed.needs.length > 0 ? parsed.needs : ["อื่นๆ"],
+                note: parsed.note || "",
+                priority: parsed.priority || "Normal"
+            });
+        }
+    }
+
+    return results;
+};
+
+export default function ImportPage() {
+    const [inputText, setInputText] = useState("");
+    const [parsedData, setParsedData] = useState<ParsedRequest[]>([]);
+    const [importing, setImporting] = useState(false);
+
+    const handleParse = () => {
+        const parsed = parseComments(inputText);
+        setParsedData(parsed);
+    };
+
+    const handleBulkImport = async () => {
+        if (parsedData.length === 0) return;
+
+        setImporting(true);
+        try {
+            const response = await fetch("/api/requests/bulk", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ requests: parsedData })
+            });
+
+            if (response.ok) {
+                alert(`นำเข้าข้อมูลสำเร็จ ${parsedData.length} รายการ`);
+                setInputText("");
+                setParsedData([]);
+            } else {
+                alert("เกิดข้อผิดพลาดในการนำเข้าข้อมูล");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("เกิดข้อผิดพลาด");
+        } finally {
+            setImporting(false);
+        }
+    };
+
+    const handleDownloadCSV = () => {
+        const headers = ["ชื่อ", "เบอร์โทร", "ที่อยู่", "จำนวนคน", "ความต้องการ", "หมายเหตุ", "ความเร่งด่วน"];
+        const rows = parsedData.map(req => [
+            req.name,
+            req.phone,
+            req.location.address,
+            req.peopleCount,
+            req.needs.join(", "),
+            req.note,
+            req.priority
+        ]);
+
+        const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+        const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `parsed-requests-${Date.now()}.csv`;
+        link.click();
+    };
+
+    const updateParsedItem = (index: number, field: keyof ParsedRequest, value: any) => {
+        const updated = [...parsedData];
+        updated[index] = { ...updated[index], [field]: value };
+        setParsedData(updated);
+    };
+
+    const removeParsedItem = (index: number) => {
+        setParsedData(parsedData.filter((_, i) => i !== index));
+    };
+
+    return (
+        <main className="min-h-screen bg-slate-50 p-4 md:p-6">
+            <div className="max-w-7xl mx-auto space-y-6">
+                <header className="bg-white p-4 rounded-lg shadow border border-slate-200">
+                    <h1 className="text-2xl font-bold text-slate-800">📥 นำเข้าข้อมูลจาก Facebook</h1>
+                    <p className="text-slate-500 text-sm mt-1">Copy comments จาก Facebook แล้ววางลงในช่องด้านล่าง</p>
+                </header>
+
+                <div className="grid lg:grid-cols-2 gap-6">
+                    {/* Input Section */}
+                    <Card>
+                        <h2 className="text-lg font-bold mb-3">1️⃣ วาง Comments ที่นี่</h2>
+                        <textarea
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            placeholder="วาง comments จาก Facebook ที่นี่...&#x0A;&#x0A;ตัวอย่าง:&#x0A;ชื่อ: สมชาย ใจดี&#x0A;เบอร์: 081-234-5678&#x0A;ที่อยู่: 123 ซอยลาดพร้าว อำเภอหาดใหญ่&#x0A;จำนวน: 5 คน&#x0A;ต้องการ: น้ำดื่ม อาหาร ด่วน!"
+                            className="w-full h-80 p-3 border rounded-lg font-mono text-sm resize-none"
+                        />
+                        <div className="mt-4 flex gap-2">
+                            <Button
+                                variant="primary"
+                                onClick={handleParse}
+                                disabled={!inputText.trim()}
+                            >
+                                🔍 วิเคราะห์ข้อมูล
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setInputText("")}
+                            >
+                                ล้างข้อมูล
+                            </Button>
+                        </div>
+                    </Card>
+
+                    {/* Preview Section */}
+                    <Card>
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="text-lg font-bold">2️⃣ ข้อมูลที่วิเคราะห์ได้ ({parsedData.length})</h2>
+                            {parsedData.length > 0 && (
+                                <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={handleDownloadCSV}>
+                                        📄 Download CSV
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        size="sm"
+                                        onClick={handleBulkImport}
+                                        disabled={importing}
+                                    >
+                                        {importing ? "กำลังนำเข้า..." : `✅ นำเข้า ${parsedData.length} รายการ`}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                            {parsedData.length === 0 ? (
+                                <p className="text-center text-slate-400 py-8">ยังไม่มีข้อมูล - กดปุ่ม "วิเคราะห์ข้อมูล" ด้านซ้าย</p>
+                            ) : (
+                                parsedData.map((item, idx) => (
+                                    <div key={idx} className="p-3 bg-slate-50 rounded border border-slate-200">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="font-bold text-sm">#{idx + 1}</span>
+                                            <button
+                                                onClick={() => removeParsedItem(idx)}
+                                                className="text-red-500 text-xs hover:bg-red-50 px-2 py-1 rounded"
+                                            >
+                                                ❌ ลบ
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <label className="font-semibold">ชื่อ:</label>
+                                                <input
+                                                    value={item.name}
+                                                    onChange={(e) => updateParsedItem(idx, 'name', e.target.value)}
+                                                    className="w-full px-2 py-1 border rounded mt-1"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="font-semibold">เบอร์:</label>
+                                                <input
+                                                    value={item.phone}
+                                                    onChange={(e) => updateParsedItem(idx, 'phone', e.target.value)}
+                                                    className="w-full px-2 py-1 border rounded mt-1"
+                                                />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="font-semibold">ที่อยู่:</label>
+                                                <input
+                                                    value={item.location.address}
+                                                    onChange={(e) => updateParsedItem(idx, 'location', { ...item.location, address: e.target.value })}
+                                                    className="w-full px-2 py-1 border rounded mt-1"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="font-semibold">จำนวนคน:</label>
+                                                <input
+                                                    type="number"
+                                                    value={item.peopleCount}
+                                                    onChange={(e) => updateParsedItem(idx, 'peopleCount', parseInt(e.target.value))}
+                                                    className="w-full px-2 py-1 border rounded mt-1"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="font-semibold">ความเร่งด่วน:</label>
+                                                <select
+                                                    value={item.priority}
+                                                    onChange={(e) => updateParsedItem(idx, 'priority', e.target.value)}
+                                                    className="w-full px-2 py-1 border rounded mt-1"
+                                                >
+                                                    <option value="Normal">ปกติ</option>
+                                                    <option value="High">ด่วน</option>
+                                                </select>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="font-semibold">ความต้องการ:</label>
+                                                <div className="flex flex-wrap gap-1 mt-1">
+                                                    {item.needs.map((need, i) => (
+                                                        <span key={i} className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                                                            {need}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Instructions */}
+                <Card>
+                    <h3 className="font-bold mb-3">📖 วิธีใช้งาน</h3>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600">
+                        <li>เปิด Facebook group post ที่มี comments</li>
+                        <li>Copy ข้อความ comments ทั้งหมด (หรือเลือกเฉพาะที่ต้องการ)</li>
+                        <li>Paste ลงในช่องด้านซ้าย</li>
+                        <li>กดปุ่ม "วิเคราะห์ข้อมูล"</li>
+                        <li>ตรวจสอบและแก้ไขข้อมูลที่วิเคราะห์ได้</li>
+                        <li>กด "นำเข้า" เพื่อบันทึกเข้าระบบ หรือ "Download CSV" เพื่อบันทึกเป็นไฟล์</li>
+                    </ol>
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                        <strong>💡 เคล็ดลับ:</strong> ระบบจะพยายามดึงข้อมูลดังนี้
+                        <ul className="list-disc list-inside mt-2 space-y-1 text-xs">
+                            <li>ชื่อ: หาคำที่เป็นภาษาไทย 3-30 ตัวอักษร</li>
+                            <li>เบอร์: รูปแบบ 0X-XXXX-XXXX หรือ 081234567</li>
+                            <li>ที่อยู่: หาคำว่า "ที่อยู่", "อยู่", "ซอย", "ถนน"</li>
+                            <li>จำนวนคน: หาตัวเลขที่ตามด้วย "คน"</li>
+                            <li>ความต้องการ: น้ำ, อาหาร, ยา, เรือ, เสื้อผ้า</li>
+                        </ul>
+                    </div>
+                </Card>
+            </div>
+        </main>
+    );
+}
