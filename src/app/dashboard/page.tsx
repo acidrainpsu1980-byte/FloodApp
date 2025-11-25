@@ -158,26 +158,25 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Main Content: Map & Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column: Map (Takes 2/3 space on large screens) */}
-                    <div className="lg:col-span-2 space-y-4">
-                        <div className="bg-white p-4 rounded-lg shadow border border-slate-200">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-lg font-bold text-slate-700">📍 แผนที่สถานการณ์</h2>
-                                <Button variant="ghost" size="sm" onClick={() => setShowMap(!showMap)}>
-                                    {showMap ? 'ซ่อนแผนที่' : 'แสดงแผนที่'}
-                                </Button>
-                            </div>
-                            {showMap && <MapViewer requests={requests} />}
+                <div className="space-y-6">
+                    {/* Map Section (Full Width) */}
+                    <div className="bg-white p-4 rounded-lg shadow border border-slate-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-bold text-slate-700">📍 แผนที่สถานการณ์</h2>
+                            <Button variant="ghost" size="sm" onClick={() => setShowMap(!showMap)}>
+                                {showMap ? 'ซ่อนแผนที่' : 'แสดงแผนที่'}
+                            </Button>
                         </div>
+                        {showMap && <MapViewer requests={requests} />}
                     </div>
 
-                    {/* Right Column: Charts & Activity (Takes 1/3 space) */}
-                    <div className="space-y-6">
+                    {/* Charts & Activity Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Left: Chart */}
                         <ReportChart />
 
-                        {/* Recent Activity Feed */}
-                        <div className="bg-white p-4 rounded-lg shadow border border-slate-200 h-[300px] overflow-hidden flex flex-col">
+                        {/* Right: Activity Feed */}
+                        <div className="bg-white p-4 rounded-lg shadow border border-slate-200 h-[400px] overflow-hidden flex flex-col">
                             <h2 className="text-lg font-bold text-slate-700 mb-3">📢 ความเคลื่อนไหวล่าสุด</h2>
                             <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                                 {requests.slice(0, 10).map(req => (
