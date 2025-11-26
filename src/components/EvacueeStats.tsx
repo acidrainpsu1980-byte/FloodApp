@@ -63,20 +63,33 @@ export default function EvacueeStats() {
         ],
     };
 
+    const shelterData = {
+        labels: stats.byShelter?.map((s: any) => s.shelter || 'ไม่ระบุ') || [],
+        datasets: [
+            {
+                label: 'จำนวนผู้อพยพ (คน)',
+                data: stats.byShelter?.map((s: any) => s.count) || [],
+                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+
     return (
         <div className="mt-8 bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
             <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">📊 สรุปยอดผู้อพยพ (Real-time)</h2>
 
-            <div className="grid md:grid-cols-3 gap-8 items-center">
+            <div className="grid md:grid-cols-4 gap-8 items-start">
                 {/* Total Count */}
-                <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-100 md:col-span-1">
                     <p className="text-slate-500 font-medium mb-2">ยอดรวมทั้งหมด</p>
                     <p className="text-5xl font-extrabold text-blue-600">{stats.total.toLocaleString()}</p>
                     <p className="text-sm text-slate-400 mt-2">คน</p>
                 </div>
 
                 {/* Gender Chart */}
-                <div className="h-64 flex flex-col items-center justify-center">
+                <div className="h-64 flex flex-col items-center justify-center md:col-span-1">
                     <h3 className="text-sm font-bold text-slate-600 mb-4">จำแนกตามเพศ</h3>
                     <div className="w-full h-full max-w-[200px]">
                         <Pie data={genderData} options={{ responsive: true, maintainAspectRatio: false }} />
@@ -84,7 +97,7 @@ export default function EvacueeStats() {
                 </div>
 
                 {/* District Chart */}
-                <div className="h-64 flex flex-col items-center justify-center w-full">
+                <div className="h-64 flex flex-col items-center justify-center w-full md:col-span-2">
                     <h3 className="text-sm font-bold text-slate-600 mb-4">จำแนกตามอำเภอ</h3>
                     <div className="w-full h-full">
                         <Bar
@@ -94,6 +107,23 @@ export default function EvacueeStats() {
                                 maintainAspectRatio: false,
                                 plugins: { legend: { display: false } },
                                 scales: { y: { beginAtZero: true } }
+                            }}
+                        />
+                    </div>
+                </div>
+
+                {/* Shelter Chart (Full Width Row) */}
+                <div className="h-80 flex flex-col items-center justify-center w-full md:col-span-4 border-t border-slate-100 pt-6">
+                    <h3 className="text-lg font-bold text-slate-700 mb-4">📍 จำแนกตามศูนย์พักพิง</h3>
+                    <div className="w-full h-full">
+                        <Bar
+                            data={shelterData}
+                            options={{
+                                indexAxis: 'y', // Horizontal Bar
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: { x: { beginAtZero: true } }
                             }}
                         />
                     </div>

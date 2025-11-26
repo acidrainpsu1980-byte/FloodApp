@@ -21,10 +21,16 @@ export async function GET() {
             "SELECT c.district, COUNT(1) as count FROM c WHERE c.type = 'evacuee' GROUP BY c.district"
         ).fetchAll();
 
+        // Get Shelter Stats
+        const { resources: shelterRes } = await container.items.query(
+            "SELECT c.shelter, COUNT(1) as count FROM c WHERE c.type = 'evacuee' GROUP BY c.shelter"
+        ).fetchAll();
+
         return NextResponse.json({
             total,
             byGender: genderRes,
-            byDistrict: districtRes
+            byDistrict: districtRes,
+            byShelter: shelterRes
         });
 
     } catch (error: any) {
