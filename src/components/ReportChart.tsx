@@ -27,22 +27,30 @@ export default function ReportChart() {
             try {
                 const res = await fetch('/api/requests');
                 const json = await res.json();
-                setData(json);
+                if (Array.isArray(json)) {
+                    setData(json);
+                } else {
+                    console.error("Invalid data format", json);
+                    setData([]);
+                }
             } catch (e) {
                 console.error('Failed to fetch requests for report', e);
+                setData([]);
             }
         }
         fetchRequests();
     }, []);
 
     useEffect(() => {
-        if (!data.length) return;
+        if (!Array.isArray(data) || !data.length) return;
         // Aggregate counts per need
         const needCounts: Record<string, number> = {};
         data.forEach((req) => {
-            req.needs.forEach((need) => {
-                needCounts[need] = (needCounts[need] || 0) + 1;
-            });
+            if (Array.isArray(req.needs)) {
+                req.needs.forEach((need) => {
+                    needCounts[need] = (needCounts[need] || 0) + 1;
+                });
+            }
         });
         const labels = Object.keys(needCounts);
         const counts = labels.map((label) => needCounts[label]);

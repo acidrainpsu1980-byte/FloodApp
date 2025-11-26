@@ -31,10 +31,10 @@ export default function EvacueeStats() {
     if (!stats) return null;
 
     const genderData = {
-        labels: stats.byGender.map((g: any) => g.gender || 'ไม่ระบุ'),
+        labels: (stats.byGender || []).map((g: any) => g.gender || 'ไม่ระบุ'),
         datasets: [
             {
-                data: stats.byGender.map((g: any) => g.count),
+                data: (stats.byGender || []).map((g: any) => g.count),
                 backgroundColor: [
                     'rgba(54, 162, 235, 0.6)',
                     'rgba(255, 99, 132, 0.6)',
@@ -51,11 +51,11 @@ export default function EvacueeStats() {
     };
 
     const districtData = {
-        labels: stats.byDistrict.map((d: any) => d.district || 'ไม่ระบุ'),
+        labels: (stats.byDistrict || []).map((d: any) => d.district || 'ไม่ระบุ'),
         datasets: [
             {
                 label: 'จำนวนผู้อพยพ (คน)',
-                data: stats.byDistrict.map((d: any) => d.count),
+                data: (stats.byDistrict || []).map((d: any) => d.count),
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
@@ -95,7 +95,7 @@ export default function EvacueeStats() {
                 {/* Total Count */}
                 <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-100 md:col-span-1">
                     <p className="text-slate-500 font-medium mb-2">ยอดรวมทั้งหมด</p>
-                    <p className="text-5xl font-extrabold text-blue-600">{stats.total.toLocaleString()}</p>
+                    <p className="text-5xl font-extrabold text-blue-600">{(stats.total || 0).toLocaleString()}</p>
                     <p className="text-sm text-slate-400 mt-2">คน</p>
                 </div>
 

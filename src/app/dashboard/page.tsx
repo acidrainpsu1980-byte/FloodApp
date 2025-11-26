@@ -200,7 +200,13 @@ export default function DashboardPage() {
                                         <div className="flex justify-between">
                                             <span className="font-medium text-slate-800 truncate w-2/3">{req.name}</span>
                                             <span className="text-xs text-slate-400 whitespace-nowrap">
-                                                {new Date(req.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                                                {(() => {
+                                                    try {
+                                                        return new Date(req.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                                                    } catch {
+                                                        return '';
+                                                    }
+                                                })()}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center mt-1">
@@ -209,7 +215,7 @@ export default function DashboardPage() {
                                                 }`}>
                                                 {req.status === 'pending' ? 'รอ' : req.status === 'in-progress' ? 'กำลังทำ' : 'เสร็จ'}
                                             </span>
-                                            <span className="text-xs text-slate-500 truncate max-w-[100px]">{req.needs[0]}...</span>
+                                            <span className="text-xs text-slate-500 truncate max-w-[100px]">{(req.needs && req.needs[0]) ? req.needs[0] : '-'}...</span>
                                         </div>
                                     </div>
                                 ))}

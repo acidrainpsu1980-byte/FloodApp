@@ -83,7 +83,7 @@ export default function MapViewer({ requests, selectedRequestId }: MapViewerProp
     const defaultCenter: [number, number] = [7.0086, 100.4747];
 
     // Filter requests that have location data
-    const validRequests = requests.filter(r => r.location.lat && r.location.lng);
+    const validRequests = (Array.isArray(requests) ? requests : []).filter(r => r.location && r.location.lat && r.location.lng);
 
     // Prepare heatmap data: [lat, lng, intensity]
     // High priority has higher intensity (1.0), Normal (0.5)
@@ -135,11 +135,11 @@ export default function MapViewer({ requests, selectedRequestId }: MapViewerProp
                                             <div className="text-sm text-gray-600 mb-2 space-y-1">
                                                 <p className="flex items-center gap-2">📞 <a href={`tel:${request.phone}`} className="text-blue-600 hover:underline">{request.phone}</a></p>
                                                 <p>👥 {request.peopleCount} คน</p>
-                                                <p>🚑 {request.needs.join(", ")}</p>
+                                                <p>🚑 {(request.needs && Array.isArray(request.needs)) ? request.needs.join(", ") : '-'}</p>
                                             </div>
                                             <div className="flex gap-2 items-center mb-2">
                                                 <span className={`px-2 py-0.5 rounded text-xs font-bold text-white ${request.status === 'pending' ? 'bg-violet-500' :
-                                                        request.status === 'in-progress' ? 'bg-yellow-500' : 'bg-green-500'
+                                                    request.status === 'in-progress' ? 'bg-yellow-500' : 'bg-green-500'
                                                     }`}>
                                                     {request.status === 'pending' ? 'รอช่วยเหลือ' :
                                                         request.status === 'in-progress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น'}
