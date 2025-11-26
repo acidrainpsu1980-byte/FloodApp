@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
         let successCount = 0;
         let errorCount = 0;
-        let firstError = null;
+        let firstError: any = null;
 
         // Process in batches to avoid timeouts
         const batchSize = 50;
