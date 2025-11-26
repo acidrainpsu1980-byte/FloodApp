@@ -17,7 +17,32 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="mb-12 transform hover:scale-105 transition-transform duration-300">
+          <Link href="/evacuees" className="block group relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+            <div className="relative bg-white border-2 border-blue-500 rounded-2xl p-8 shadow-2xl hover:bg-blue-50 transition-all overflow-hidden">
+              <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider shadow-md">
+                Update ล่าสุด (Real-time)
+              </div>
+              <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+                <div className="text-8xl bg-blue-100 p-6 rounded-full shadow-inner animate-bounce-slow">🏠</div>
+                <div className="text-center md:text-left flex-1">
+                  <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-3 group-hover:text-blue-700 transition-colors">
+                    ตรวจสอบรายชื่อผู้อพยพ
+                  </h2>
+                  <p className="text-xl text-slate-600 mb-6">
+                    ศูนย์พักพิงผู้ประสบภัย มหาวิทยาลัยสงขลานครินทร์ (ม.อ.)
+                  </p>
+                  <span className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-10 py-4 rounded-full font-bold text-xl shadow-lg group-hover:shadow-blue-500/50 transition-all">
+                    🔍 ค้นหารายชื่อทันที
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer border-t-4 border-t-[var(--secondary)]">
             <div className="flex flex-col items-center text-center h-full justify-between gap-6">
               <div>
@@ -51,29 +76,7 @@ export default function Home() {
           </Card>
         </div>
 
-        <div className="mt-8">
-          <Link href="/evacuees" className="block group">
-            <div className="bg-white border-2 border-blue-500 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:bg-blue-50 transition-all transform hover:-translate-y-1 cursor-pointer relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
-                Update ล่าสุด
-              </div>
-              <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-                <div className="text-7xl bg-blue-100 p-6 rounded-full shadow-inner">🏠</div>
-                <div className="text-center md:text-left flex-1">
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-3 group-hover:text-blue-700 transition-colors">
-                    ตรวจสอบรายชื่อผู้อพยพ
-                  </h2>
-                  <p className="text-xl text-slate-600 mb-6">
-                    ศูนย์พักพิงผู้ประสบภัย มหาวิทยาลัยสงขลานครินทร์ (ม.อ.)
-                  </p>
-                  <span className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg group-hover:bg-blue-700 transition-all group-hover:scale-105">
-                    🔍 ค้นหารายชื่อทันที
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
+
 
         {/* Evacuee Statistics Section */}
         <EvacueeStats />
