@@ -100,12 +100,18 @@ export default function ImportEvacueesPage() {
             const result = await response.json();
             if (response.ok) {
                 setImportResult({ success: result.successCount, error: result.errorCount });
-                let msg = `นำเข้าสำเร็จ: ${result.successCount} รายการ (ผิดพลาด: ${result.errorCount})`;
+                let msg = `นำเข้าสำเร็จ: ${result.successCount} รายการ`;
+                if (result.skippedCount > 0) {
+                    msg += `\n(ข้ามข้อมูลซ้ำ: ${result.skippedCount} รายการ)`;
+                }
+                if (result.errorCount > 0) {
+                    msg += `\n(ผิดพลาด: ${result.errorCount} รายการ)`;
+                }
                 if (result.errorCount > 0 && result.firstError) {
                     msg += `\n\nตัวอย่างข้อผิดพลาด: ${JSON.stringify(result.firstError)}`;
                 }
                 alert(msg);
-                if (result.successCount > 0) {
+                if (result.successCount > 0 || result.skippedCount > 0) {
                     setInputData(""); // Clear input
                     setPreviewData([]); // Clear preview
                 }

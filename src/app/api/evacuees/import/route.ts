@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
 
         let successCount = 0;
         let errorCount = 0;
+        let skippedCount = 0;
         let firstError: any = null;
 
         // Process in batches to avoid timeouts
@@ -24,6 +25,20 @@ export async function POST(request: NextRequest) {
             const batch = evacuees.slice(i, i + batchSize);
             await Promise.all(batch.map(async (evacuee: any) => {
                 try {
+                    // Check for duplicates (same First Name + Last Name)
+                    const { resources: existing } = await container.items.query({
+                        query: "SELECT * FROM c WHERE c.firstName = @firstName AND c.lastName = @lastName AND c.type = 'evacuee'",
+                        parameters: [
+                            { name: "@firstName", value: evacuee.firstName },
+                            { name: "@lastName", value: evacuee.lastName }
+                        ]
+                    }).fetchAll();
+
+                    if (existing.length > 0) {
+                        skippedCount++;
+                        return; // Skip duplicate
+                    }
+
                     // Ensure ID exists
                     if (!evacuee.id) {
                         evacuee.id = `evac-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -44,6 +59,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: "Import completed",
             successCount,
+            skippedCount,
             errorCount,
             firstError
         });
