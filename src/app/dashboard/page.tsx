@@ -269,8 +269,8 @@ export default function DashboardPage() {
                                         <div className="text-sm text-slate-600 space-y-1">
                                             <p className="flex items-center gap-2">📞 <a href={`tel:${request.phone}`} className="hover:underline">{request.phone}</a></p>
                                             <div className="flex items-center gap-1">
-                                                <p className="truncate flex-1">📍 {request.location.address}</p>
-                                                {request.location.lat && request.location.lng && (
+                                                <p className="truncate flex-1">📍 {request.location?.address || 'ไม่ระบุตำแหน่ง'}</p>
+                                                {request.location?.lat && request.location?.lng && (
                                                     <button
                                                         onClick={() => handleViewOnMap(request.id)}
                                                         className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100 border border-blue-200 whitespace-nowrap"

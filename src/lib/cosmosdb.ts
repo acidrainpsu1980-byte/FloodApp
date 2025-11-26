@@ -19,18 +19,9 @@ async function initCosmosDB() {
     if (!container) {
         container = database.container(containerId);
     }
-    if (!evacueesContainer) {
-        evacueesContainer = database.container("Evacuees");
-    }
 }
 
-let evacueesContainer: Container;
-
 export async function getEvacueesContainer() {
-    // The original instruction implies a refactor of initCosmosDB to initCosmos
-    // and for it to return the database object.
-    // Since the full refactor is not provided, we'll adapt to the existing initCosmosDB structure
-    // and return the 'tsRequests' container directly after initialization.
     await initCosmosDB();
     // Reuse existing container to avoid quota limits
     return database.container("tsRequests");
@@ -41,7 +32,7 @@ export async function getAllRequests(): Promise<RequestData[]> {
     await initCosmosDB();
 
     const querySpec = {
-        query: "SELECT * FROM c WHERE c.type != 'evacuee' ORDER BY c.timestamp DESC"
+        query: "SELECT * FROM c WHERE c.type != 'evacuee' AND c.type != 'news' ORDER BY c.timestamp DESC"
     };
 
     const { resources } = await container.items.query(querySpec).fetchAll();
