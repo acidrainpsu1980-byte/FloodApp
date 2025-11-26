@@ -55,23 +55,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-t-4 border-t-[var(--secondary)]">
-            <div className="flex flex-col items-center text-center h-full justify-between gap-6">
-              <div>
-                <h2 className="text-2xl font-bold text-[var(--secondary)] mb-2">ฉันต้องการความช่วยเหลือ</h2>
-                <p className="text-[var(--text-secondary)]">
-                  หากคุณติดอยู่ในพื้นที่น้ำท่วมหรือต้องการเสบียง แจ้งขอความช่วยเหลือที่นี่
-                </p>
-              </div>
-              <Link href="/request" className="w-full">
-                <Button variant="secondary" fullWidth size="lg">
-                  แจ้งขอความช่วยเหลือ
-                </Button>
-              </Link>
-            </div>
-          </Card>
-
+        <div className="max-w-md mx-auto mb-12">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer border-t-4 border-t-[var(--primary)]">
             <div className="flex flex-col items-center text-center h-full justify-between gap-6">
               <div>
