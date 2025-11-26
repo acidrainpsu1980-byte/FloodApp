@@ -34,8 +34,8 @@ export default function ImportEvacueesPage() {
         return result;
     };
 
-    const handlePreview = () => {
-        const lines = inputData.trim().split('\n');
+    const processData = (text: string) => {
+        const lines = text.trim().split('\n');
 
         const data = [];
 
@@ -74,6 +74,16 @@ export default function ImportEvacueesPage() {
 
         setPreviewData(data);
         setImportResult(null);
+    };
+
+    const handleFileUpload = (file: File) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const text = e.target?.result as string;
+            setInputData(text); // Keep for reference if needed, or remove
+            processData(text);
+        };
+        reader.readAsText(file);
     };
 
     const handleImport = async () => {
@@ -122,19 +132,33 @@ export default function ImportEvacueesPage() {
                 <div className="grid lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-4 space-y-4">
                         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 h-full flex flex-col">
-                            <h2 className="font-bold mb-2">1. วางข้อมูล (CSV)</h2>
-                            <textarea
-                                value={inputData}
-                                onChange={(e) => setInputData(e.target.value)}
-                                placeholder="วางข้อมูลจากไฟล์ CSV ที่นี่..."
-                                className="flex-1 w-full p-3 border border-slate-200 rounded-lg font-mono text-xs resize-none focus:ring-2 focus:ring-blue-500 outline-none min-h-[300px] whitespace-pre"
-                            />
-                            <button
-                                onClick={handlePreview}
-                                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                            <h2 className="font-bold mb-2">1. เลือกไฟล์ CSV</h2>
+                            <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative min-h-[300px]"
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    const file = e.dataTransfer.files[0];
+                                    if (file) handleFileUpload(file);
+                                }}
                             >
-                                ตรวจสอบข้อมูล
-                            </button>
+                                <input
+                                    type="file"
+                                    accept=".csv,.txt"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) handleFileUpload(file);
+                                    }}
+                                />
+                                <div className="text-center p-6 pointer-events-none">
+                                    <div className="text-4xl mb-3">📄</div>
+                                    <p className="font-medium text-slate-700">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวาง</p>
+                                    <p className="text-sm text-slate-500 mt-1">รองรับไฟล์ .csv (UTF-8)</p>
+                                </div>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-2 text-center">
+                                * ไฟล์ต้องมีรูปแบบตาม data.csv (มีคอลัมน์เวลา, ชื่อ, นามสกุล, ฯลฯ)
+                            </p>
                         </div>
                     </div>
 
