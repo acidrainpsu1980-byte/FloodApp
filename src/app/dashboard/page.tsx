@@ -133,6 +133,9 @@ export default function DashboardPage() {
                         <Button variant="outline" size="sm" onClick={() => router.push('/admin/evacuees/import')} className="border-blue-600 text-blue-600 hover:bg-blue-50">
                             📥 Import ผู้อพยพ
                         </Button>
+                        <Button variant="outline" size="sm" onClick={() => router.push('/admin/evacuees')} className="border-orange-600 text-orange-600 hover:bg-orange-50">
+                            📋 จัดการผู้อพยพ
+                        </Button>
                         <Button variant="outline" size="sm" onClick={handleExport} className="border-green-600 text-green-600 hover:bg-green-50">
                             📄 Export CSV
                         </Button>
