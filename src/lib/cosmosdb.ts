@@ -19,6 +19,16 @@ async function initCosmosDB() {
     if (!container) {
         container = database.container(containerId);
     }
+    if (!evacueesContainer) {
+        evacueesContainer = database.container("Evacuees");
+    }
+}
+
+let evacueesContainer: Container;
+
+export async function getEvacueesContainer(): Promise<Container> {
+    await initCosmosDB();
+    return evacueesContainer;
 }
 
 // Get all requests

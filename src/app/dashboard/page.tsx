@@ -130,6 +130,9 @@ export default function DashboardPage() {
                         <Button variant="outline" size="sm" onClick={() => router.push('/admin/import')} className="border-purple-600 text-purple-600 hover:bg-purple-50">
                             📥 Import จาก FB
                         </Button>
+                        <Button variant="outline" size="sm" onClick={() => router.push('/admin/evacuees/import')} className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                            📥 Import ผู้อพยพ
+                        </Button>
                         <Button variant="outline" size="sm" onClick={handleExport} className="border-green-600 text-green-600 hover:bg-green-50">
                             📄 Export CSV
                         </Button>
