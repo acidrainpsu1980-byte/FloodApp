@@ -48,7 +48,8 @@ export default function ImportEvacueesPage() {
             // Try to detect column offset
             let offset = 0;
             if (cols[0] === '' && cols[1]?.includes('/')) offset = 1; // Starts with empty col
-            else if (cols[0]?.includes('/')) offset = 0; // Starts directly
+            else if (cols[0]?.includes('/')) offset = 0; // Starts directly with timestamp
+            else if (cols[1]?.includes('/') && !isNaN(parseInt(cols[0]))) offset = 1; // Starts with index number
             else continue; // Not a data line
 
             const firstName = cols[offset + 2];
