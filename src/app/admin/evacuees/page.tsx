@@ -41,10 +41,14 @@ export default function AdminEvacueesPage() {
             });
 
             if (res.ok) {
+                // Remove from local state immediately
+                setEvacuees(prev => prev.filter(item => item.id !== id));
                 alert("ลบข้อมูลสำเร็จ");
-                fetchEvacuees();
+                // Also refresh from server to ensure consistency
+                setTimeout(fetchEvacuees, 500);
             } else {
-                alert("ลบข้อมูลไม่สำเร็จ");
+                const error = await res.json();
+                alert(`ลบข้อมูลไม่สำเร็จ: ${error.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error(error);

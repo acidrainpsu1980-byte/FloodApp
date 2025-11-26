@@ -44,12 +44,17 @@ export async function DELETE(request: NextRequest) {
 
         // Soft delete
         const { resource: item } = await container.item(id, partitionKey).read();
-        if (item) {
-            item.status = 'deleted';
-            await container.item(id, partitionKey).replace(item);
+        if (!item) {
+            console.error(`Item not found: id=${id}, partitionKey=${partitionKey}`);
+            return NextResponse.json({ error: 'Item not found' }, { status: 404 });
         }
 
-        return NextResponse.json({ message: 'Deleted successfully' });
+        console.log(`Deleting item: ${item.firstName} ${item.lastName} (${id})`);
+        item.status = 'deleted';
+        await container.item(id, partitionKey).replace(item);
+        console.log(`Successfully deleted item: ${id}`);
+
+        return NextResponse.json({ message: 'Deleted successfully', deletedId: id });
     } catch (error: any) {
         console.error("Delete Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
