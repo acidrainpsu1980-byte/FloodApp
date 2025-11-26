@@ -49,6 +49,12 @@ export default function Home() {
           </Card>
         </div>
 
+        <div className="mt-10 text-center">
+          <Link href="/evacuees" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold bg-white px-8 py-4 rounded-full shadow-md border border-blue-100 hover:shadow-lg transition-all transform hover:-translate-y-1">
+            <span className="text-2xl">🏠</span> ตรวจสอบรายชื่อผู้อพยพ (ศูนย์พักพิง ม.อ.)
+          </Link>
+        </div>
+
         <footer className="mt-16 text-center text-[var(--text-secondary)] text-sm">
           <p>© 2025 ระบบช่วยเหลือผู้ประสบภัยน้ำท่วมหาดใหญ่. ด้วยความห่วงใย.</p>
         </footer>
